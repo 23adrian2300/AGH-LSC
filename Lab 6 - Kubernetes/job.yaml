@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nfs-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: writer
+        image: busybox
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            echo '<!DOCTYPE html>' > /data/index.html;
+            echo '<html>' >> /data/index.html;
+            echo '<head><title>NFS Test Page</title></head>' >> /data/index.html;
+            echo '<body>' >> /data/index.html;
+            echo '<h1>Server is working!</h1>' >> /data/index.html;
+            echo '<p>This is a test page served from NFS.</p>' >> /data/index.html;
+            echo '</body>' >> /data/index.html;
+            echo '</html>' >> /data/index.html;
+        volumeMounts:
+        - name: nfs-volume
+          mountPath: /data
+      volumes:
+      - name: nfs-volume
+        persistentVolumeClaim:
+          claimName: nfs-pvc
+      restartPolicy: OnFailure
+
+      
